@@ -2,15 +2,21 @@ import { useState, useContext, useEffect } from 'react'
 import RatingSelect from './RatingSelect'
 import Card from './shared/Card'
 import Button from './shared/Button'
+import FeedbackContext from '../context/FeedbackProvider'
 
-
-function FeedbackForm({handleAdd}) {
+function FeedbackForm() {
+  const {addFeedback, feedbackEdit, updateFeedback} = useContext(FeedbackContext)
   const [text, setText] = useState('')
   const [rating, setRating] = useState(10)
   const [btnDisabled, setBtnDisabled] = useState(true)
   const [message, setMessage] = useState('')
 
-
+  
+  useEffect(() => {
+    setBtnDisabled(false)
+    setText(feedbackEdit.item.text)
+    setRating(feedbackEdit.item.rating)
+  },[feedbackEdit])
 
   // prettier-ignore
   const handleTextChange = ({ target: { value } }) => { // 👈  get the value
@@ -37,8 +43,11 @@ function FeedbackForm({handleAdd}) {
         rating,
       }
 
-      
-      handleAdd(newFeedback)
+      if(feedbackEdit.edit === true){
+      updateFeedback(feedbackEdit.item.id, newFeedback)
+      }else{
+      addFeedback(newFeedback)
+      }
       // NOTE: reset to default state after submission
       setBtnDisabled(true) // 👈  add this line to reset disabled
       setRating(10) //👈 add this line to set rating back to 10
